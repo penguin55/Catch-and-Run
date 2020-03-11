@@ -8,6 +8,11 @@ public class PhotonConnect : MonoBehaviourPunCallbacks
 {
     public string versionName = "0.1";
 
+    private void Start()
+    {
+        ConnectToPhoton();    
+    }
+
     public void ConnectToPhoton()
     {
         PhotonNetwork.GameVersion = MasterManager.GameSettings.GameVersion;
@@ -21,6 +26,8 @@ public class PhotonConnect : MonoBehaviourPunCallbacks
     {
         Debug.Log("Connected to Master");
         Debug.Log(MasterManager.GameSettings.NickName);
+
+        PhotonNetwork.JoinLobby();
     }
 
     public override void OnDisconnected(DisconnectCause cause)

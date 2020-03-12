@@ -3,10 +3,12 @@
 public class CommandManager : MonoBehaviour
 {
     public static Commands UI;
+    public static Commands PROPS;
 
     private void Awake()
     {
         UI = new Commands();
+        PROPS = new Commands();
     }
 }
 
@@ -22,4 +24,6 @@ public class Commands
     public string HIDE_ROOMLIST_PANEL = "hide_roomlist_panel";
     public string OPEN_CREATE_ROOM_PANEL = "open_createroom_panel";
     public string HIDE_CREATE_ROOM_PANEL = "hide_createroom_panel";
+
+    public string READY_PLAYER_STATUS = "ready_player_status";
 }

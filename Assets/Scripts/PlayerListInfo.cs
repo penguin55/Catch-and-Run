@@ -15,4 +15,9 @@ public class PlayerListInfo : MonoBehaviour
         playerName.text = playerInfo.NickName;
         status.text = "Not Ready";
     }
+
+    public void GetReady(bool flag)
+    {
+        status.text = flag ? "Ready" : "Not Ready";
+    }
 }

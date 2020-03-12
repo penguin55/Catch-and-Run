@@ -9,12 +9,17 @@ public class GameSettings : ScriptableObject
     public string GameVersion { get { return gameVersion; } }
 
     [SerializeField] private string nickName = "Penguin";
+    private string generatedUnique;
     public string NickName
     {
         get
         {
-            int value = Random.Range(0, 9999);
-            return nickName + "-" + value;
+            return nickName+"-"+generatedUnique;
         }
+    }
+
+    public void GenerateNickname()
+    {
+        generatedUnique = Random.Range(0, 9999).ToString();
     }
 }

@@ -15,6 +15,7 @@ public class RoomListings : MonoBehaviourPunCallbacks
     [SerializeField] private Button joinButton;
 
     private List<RoomListInfo> rooms = new List<RoomListInfo>();
+    private List<RoomInfo> roomsInfo = new List<RoomInfo>(); 
 
     private RoomInfo currentRoom = null;
 
@@ -26,15 +27,33 @@ public class RoomListings : MonoBehaviourPunCallbacks
             {
                 if (currentRoom == info) UnsetCurrentRoom();
                 int index = rooms.FindIndex(x => x.RoomInfo.Name == info.Name);
-                Destroy(rooms[index].gameObject);
-                rooms.RemoveAt(index);
+                if (index != -1)
+                {
+                    Debug.Log(index);
+                    Destroy(rooms[index].gameObject);
+                    rooms.RemoveAt(index);
+                    roomsInfo.RemoveAt(index);
+                }
             }
             else
             {
-                RoomListInfo room = Instantiate(roomListingPrefabs, content);
-                if (room != null) room.SetRoomInfo(info);
-                rooms.Add(room);
+                UpdatingList(info);
             }
+        }
+    }
+
+    private void UpdatingList(RoomInfo info)
+    {
+        if (roomsInfo.Contains(info))
+        {
+            rooms[roomsInfo.IndexOf(info)].SetRoomInfo(info);
+        }
+        else
+        {
+            RoomListInfo room = Instantiate(roomListingPrefabs, content);
+            if (room != null) room.SetRoomInfo(info);
+            rooms.Add(room);
+            roomsInfo.Add(info);
         }
     }
 
@@ -59,5 +78,10 @@ public class RoomListings : MonoBehaviourPunCallbacks
     public void OnClick_Join()
     {
         if (currentRoom != null) PhotonNetwork.JoinRoom(currentRoom.Name);
+    }
+
+    public Transform GetContent()
+    {
+        return content;
     }
 }

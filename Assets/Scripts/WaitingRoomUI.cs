@@ -9,6 +9,7 @@ public class WaitingRoomUI : MonoBehaviourPunCallbacks
 {
     [SerializeField] private Text roomName;
     [SerializeField] private Text roomPlayer;
+    [SerializeField] private Text readyText;
 
     public void Initialize()
     {
@@ -17,6 +18,7 @@ public class WaitingRoomUI : MonoBehaviourPunCallbacks
         roomPlayer.text = (info.PlayerCount + 1) + "/" + info.MaxPlayers;
     }
 
-    private void UpdatePlayer() {
+    public void UpdateReadyButtonPlayer(Player player) {
+        readyText.text = ((bool)player.CustomProperties[CommandManager.PROPS.READY_PLAYER_STATUS]) ? "CANCEL": "READY";
     }
 }

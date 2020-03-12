@@ -13,6 +13,10 @@ public class PlayerListings : MonoBehaviourPunCallbacks
 
     public void GetCurrentRoomPlayers()
     {
+        if (!PhotonNetwork.IsConnected) return;
+        if (PhotonNetwork.CurrentRoom == null || PhotonNetwork.CurrentRoom.Players == null) return;
+
+        content.DestroyChildrens();
         foreach (KeyValuePair<int, Player> playerInfo in PhotonNetwork.CurrentRoom.Players)
         {
             AddPlayerToRoom(playerInfo.Value);
@@ -24,6 +28,20 @@ public class PlayerListings : MonoBehaviourPunCallbacks
         PlayerListInfo player = Instantiate(playerListingPrefabs, content);
         if (player != null) player.SetRoomInfo(newPlayer);
         players.Add(player);
+    }
+
+    public Transform GetContent()
+    {
+        return content;
+    }
+
+    public void UpdateStatus(Player player)
+    {
+        int index = players.FindIndex(x => x.PlayerInfo == player);
+        if (index != -1)
+        {
+            players[index].GetReady((bool) player.CustomProperties[CommandManager.PROPS.READY_PLAYER_STATUS]);
+        }
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)

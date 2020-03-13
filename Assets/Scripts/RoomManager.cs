@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
 using Photon.Pun;
-using ExitGames.Client.Photon;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -13,14 +10,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private Text roomName;
     [SerializeField] private PlayerListings playerListing;
     [SerializeField] private RoomListings roomListing;
-    [SerializeField] private WaitingRoomUI waitingRoomUI;
-
-    private ExitGames.Client.Photon.Hashtable customProps = new ExitGames.Client.Photon.Hashtable();
 
     private void Start()
     {
         instance = this;
-        customProps.Add(CommandManager.PROPS.READY_PLAYER_STATUS, false);
     }
 
     public void UpdateSelectedRoom(RoomInfo info)
@@ -33,7 +26,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected) return;
         RoomOptions options = new RoomOptions();
         options.MaxPlayers = 8;
-        options.BroadcastPropsChangeToAll = true;
         PhotonNetwork.JoinOrCreateRoom(roomName.text, options, TypedLobby.Default);
     }
 
@@ -43,6 +35,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
         MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_ROOMLIST_PANEL);
         MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_MENU_PANEL);
         MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_ROOM_PANEL);
+
+        SetUpRoomMaster();
     }
 
     public void OnClick_LeaveRoom()
@@ -52,9 +46,30 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void OnClick_Ready()
     {
-        customProps[CommandManager.PROPS.READY_PLAYER_STATUS] = !((bool)customProps[CommandManager.PROPS.READY_PLAYER_STATUS]);
+        if (!PhotonNetwork.IsMasterClient) playerListing.UpdateStatus(PhotonNetwork.LocalPlayer, playerListing.GetPlayerInfo(PhotonNetwork.LocalPlayer).Ready);
+    }
 
-        PhotonNetwork.SetPlayerCustomProperties(customProps);
+    public void OnClick_StartGame()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (PhotonNetwork.CurrentRoom.PlayerCount < 4)
+            {
+                Debug.Log("Can't play, at least 4 players in room");
+                return;
+            }
+
+            if (playerListing.GetReadyAll())
+            {
+                PhotonNetwork.CurrentRoom.IsVisible = false;
+                PhotonNetwork.CurrentRoom.IsOpen = false;
+                PhotonNetwork.LoadLevel("GAME");
+            }
+            else
+            {
+                Debug.Log("All players must ready");
+            }
+        }
     }
 
     private void LeftRoom()
@@ -63,14 +78,19 @@ public class RoomManager : MonoBehaviourPunCallbacks
         MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_MENU_PANEL);
     }
 
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    private void SetUpRoomMaster()
     {
-        if (changedProps.ContainsKey(CommandManager.PROPS.READY_PLAYER_STATUS))
+        if (PhotonNetwork.IsMasterClient)
         {
-            playerListing.UpdateStatus(targetPlayer);
-            if (targetPlayer == PhotonNetwork.LocalPlayer) waitingRoomUI.UpdateReadyButtonPlayer(targetPlayer);
+            MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_READY_BUTTON);
+            MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_START_BUTTON);
+        } else
+        {
+            MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_START_BUTTON);
+            MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_READY_BUTTON);  
         }
     }
+
 
     public override void OnLeftRoom()
     {
@@ -80,10 +100,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        customProps[CommandManager.PROPS.READY_PLAYER_STATUS] = false;
         OpenRoom();
         playerListing.GetCurrentRoomPlayers();
-        PhotonNetwork.SetPlayerCustomProperties(customProps);
     }
 
     public override void OnCreatedRoom()

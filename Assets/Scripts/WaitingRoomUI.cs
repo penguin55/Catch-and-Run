@@ -18,7 +18,13 @@ public class WaitingRoomUI : MonoBehaviourPunCallbacks
         roomPlayer.text = (info.PlayerCount + 1) + "/" + info.MaxPlayers;
     }
 
-    public void UpdateReadyButtonPlayer(Player player) {
-        readyText.text = ((bool)player.CustomProperties[CommandManager.PROPS.READY_PLAYER_STATUS]) ? "CANCEL": "READY";
+    public void UpdateRoomPlayer()
+    {
+        RoomInfo info = PhotonNetwork.CurrentRoom;
+        roomPlayer.text = (info.PlayerCount + 1) + "/" + info.MaxPlayers;
+    }
+
+    public void UpdateReadyButtonPlayer(PlayerListInfo player) {
+        readyText.text = player.Ready ? "CANCEL": "READY";
     }
 }

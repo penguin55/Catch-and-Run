@@ -8,6 +8,7 @@ public class PlayerListings : MonoBehaviourPunCallbacks
 {
     [SerializeField] private Transform content;
     [SerializeField] private PlayerListInfo playerListingPrefabs;
+    [SerializeField] private WaitingRoomUI waitingRoomUI;
 
     private List<PlayerListInfo> players = new List<PlayerListInfo>();
 
@@ -35,18 +36,51 @@ public class PlayerListings : MonoBehaviourPunCallbacks
         return content;
     }
 
-    public void UpdateStatus(Player player)
+    public PlayerListInfo GetPlayerInfo(Player player)
     {
         int index = players.FindIndex(x => x.PlayerInfo == player);
         if (index != -1)
         {
-            players[index].GetReady((bool) player.CustomProperties[CommandManager.PROPS.READY_PLAYER_STATUS]);
+            return players[index];
         }
+        else return null;
+    }
+
+    public bool GetReadyAll()
+    {
+        foreach (PlayerListInfo info in players)
+        {
+            if (!info.Ready && !info.PlayerInfo.IsMasterClient) return false;
+        }
+
+        return true;
+    }
+
+    public void UpdateStatus(Player player, bool flag)
+    {
+        base.photonView.RPC("RPC_ChangeReadyState", RpcTarget.All ,player , flag);
+        waitingRoomUI.UpdateReadyButtonPlayer(GetPlayerInfo(player));
+    }
+
+    [PunRPC]
+    private void RPC_ChangeReadyState(Player player, bool flag)
+    {
+        int index = players.FindIndex(x => x.PlayerInfo == player);
+        if (index != -1)
+        {
+            players[index].GetReady(!flag);
+        }
+    }
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        RoomManager.instance.OnClick_LeaveRoom();
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         AddPlayerToRoom(newPlayer);
+        waitingRoomUI.UpdateRoomPlayer();
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)

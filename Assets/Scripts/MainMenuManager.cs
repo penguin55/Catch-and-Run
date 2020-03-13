@@ -12,6 +12,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject roomListPanel;
     [SerializeField] private GameObject roomPanel;
     [SerializeField] private GameObject createRoomPanel;
+    [SerializeField] private GameObject startButton;
+    [SerializeField] private GameObject readyButton;
 
     private void Start()
     {
@@ -52,6 +54,18 @@ public class MainMenuManager : MonoBehaviour
             case "hide_createroom_panel":
                 HideCreateRoomPanel();
                 break;
+            case "open_start_button":
+                ShowStartButton();
+                break;
+            case "hide_start_button":
+                HideStartButton();
+                break;
+            case "open_ready_button":
+                ShowReadyButton();
+                break;
+            case "hide_ready_button":
+                HideReadyButton();
+                break;
         }
     }
 
@@ -70,6 +84,26 @@ public class MainMenuManager : MonoBehaviour
     private void RenderRoom()
     {
         roomPanel.GetComponent<WaitingRoomUI>().Initialize();
+    }
+
+    private void ShowStartButton()
+    {
+        startButton.SetActive(true);
+    }
+
+    private void HideStartButton()
+    {
+        startButton.SetActive(false);
+    }
+
+    private void ShowReadyButton()
+    {
+        readyButton.SetActive(true);
+    }
+
+    private void HideReadyButton()
+    {
+        readyButton.SetActive(false);
     }
     #endregion
 

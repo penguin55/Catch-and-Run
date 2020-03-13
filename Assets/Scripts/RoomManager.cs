@@ -21,6 +21,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         instance = this;
         customProps.Add(CommandManager.PROPS.READY_PLAYER_STATUS, false);
+        PhotonNetwork.SetPlayerCustomProperties(customProps);
     }
 
     public void UpdateSelectedRoom(RoomInfo info)
@@ -39,10 +40,27 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private void OpenRoom()
     {
+        roomListing.UnsetCurrentRoom();
+
         MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_CREATE_ROOM_PANEL);
         MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_ROOMLIST_PANEL);
         MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_MENU_PANEL);
         MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_ROOM_PANEL);
+
+        SetUpMasterRoom();
+    }
+
+    private void SetUpMasterRoom()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_READY_BUTTON);
+            MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_START_BUTTON);
+        } else
+        {
+            MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_START_BUTTON);
+            MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_READY_BUTTON);
+        }
     }
 
     public void OnClick_LeaveRoom()
@@ -52,9 +70,34 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void OnClick_Ready()
     {
-        customProps[CommandManager.PROPS.READY_PLAYER_STATUS] = !((bool)customProps[CommandManager.PROPS.READY_PLAYER_STATUS]);
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            customProps[CommandManager.PROPS.READY_PLAYER_STATUS] = !((bool)customProps[CommandManager.PROPS.READY_PLAYER_STATUS]);
 
-        PhotonNetwork.SetPlayerCustomProperties(customProps);
+            PhotonNetwork.SetPlayerCustomProperties(customProps);
+        }
+    }
+
+    public void OnClick_StartGame()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (PhotonNetwork.CurrentRoom.PlayerCount < 4)
+            {
+                Debug.Log("Can't start, at least 4 players in room");
+                return;
+            }
+
+            if (playerListing.GetReadyAll())
+            {
+                PhotonNetwork.CurrentRoom.IsVisible = false;
+                PhotonNetwork.CurrentRoom.IsOpen = false;
+                PhotonNetwork.LoadLevel("GAME");
+            } else
+            {
+                Debug.Log("All players must ready");
+            }
+        }
     }
 
     private void LeftRoom()
@@ -75,15 +118,16 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         playerListing.GetContent().DestroyChildrens();
+        playerListing.RemovePlayers();
         LeftRoom();
     }
 
     public override void OnJoinedRoom()
     {
         customProps[CommandManager.PROPS.READY_PLAYER_STATUS] = false;
+        PhotonNetwork.SetPlayerCustomProperties(customProps);
         OpenRoom();
         playerListing.GetCurrentRoomPlayers();
-        PhotonNetwork.SetPlayerCustomProperties(customProps);
     }
 
     public override void OnCreatedRoom()

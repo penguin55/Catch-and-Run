@@ -29,7 +29,6 @@ public class RoomListings : MonoBehaviourPunCallbacks
                 int index = rooms.FindIndex(x => x.RoomInfo.Name == info.Name);
                 if (index != -1)
                 {
-                    Debug.Log(index);
                     Destroy(rooms[index].gameObject);
                     rooms.RemoveAt(index);
                     roomsInfo.RemoveAt(index);
@@ -57,7 +56,7 @@ public class RoomListings : MonoBehaviourPunCallbacks
         }
     }
 
-    private void UnsetCurrentRoom()
+    public void UnsetCurrentRoom()
     {
         roomName.text = "";
         roomStatus.text = "";

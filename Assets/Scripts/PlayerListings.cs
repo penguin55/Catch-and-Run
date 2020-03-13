@@ -8,6 +8,7 @@ public class PlayerListings : MonoBehaviourPunCallbacks
 {
     [SerializeField] private Transform content;
     [SerializeField] private PlayerListInfo playerListingPrefabs;
+    [SerializeField] private WaitingRoomUI waitingRoomUI;
 
     private List<PlayerListInfo> players = new List<PlayerListInfo>();
 
@@ -30,9 +31,28 @@ public class PlayerListings : MonoBehaviourPunCallbacks
         players.Add(player);
     }
 
+    public bool GetReadyAll()
+    {
+        foreach (PlayerListInfo info in players)
+        {
+            if (!info.PlayerInfo.IsMasterClient)
+            {
+                if (!((bool)info.PlayerInfo.CustomProperties[CommandManager.PROPS.READY_PLAYER_STATUS]))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
     public Transform GetContent()
     {
         return content;
+    }
+
+    public void RemovePlayers()
+    {
+        players.Clear();
     }
 
     public void UpdateStatus(Player player)
@@ -44,13 +64,20 @@ public class PlayerListings : MonoBehaviourPunCallbacks
         }
     }
 
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        RoomManager.instance.OnClick_LeaveRoom();
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         AddPlayerToRoom(newPlayer);
+        waitingRoomUI.UpdatePlayerRoom();
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        waitingRoomUI.UpdatePlayerRoom();
         int index = players.FindIndex(x => x.PlayerInfo == otherPlayer);
         Destroy(players[index].gameObject);
         players.RemoveAt(index);

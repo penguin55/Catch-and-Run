@@ -13,9 +13,13 @@ public class WaitingRoomUI : MonoBehaviourPunCallbacks
 
     public void Initialize()
     {
-        RoomInfo info = PhotonNetwork.CurrentRoom;
-        roomName.text = "Room : "+info.Name;
-        roomPlayer.text = (info.PlayerCount + 1) + "/" + info.MaxPlayers;
+        roomName.text = "Room : "+ PhotonNetwork.CurrentRoom.Name;
+        roomPlayer.text = PhotonNetwork.CurrentRoom.PlayerCount + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
+    }
+
+    public void UpdatePlayerRoom()
+    {
+        roomPlayer.text = PhotonNetwork.CurrentRoom.PlayerCount + "/" + PhotonNetwork.CurrentRoom.MaxPlayers;
     }
 
     public void UpdateReadyButtonPlayer(Player player) {

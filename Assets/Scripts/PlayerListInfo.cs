@@ -13,11 +13,21 @@ public class PlayerListInfo : MonoBehaviour
     {
         PlayerInfo = playerInfo;
         playerName.text = playerInfo.NickName;
-        status.text = "Not Ready";
+        if (playerInfo.IsMasterClient)
+        {
+            status.text = "Room Master";
+        }
+        else
+        {
+            GetReady((bool)playerInfo.CustomProperties[CommandManager.PROPS.READY_PLAYER_STATUS]);
+        }
     }
 
     public void GetReady(bool flag)
     {
-        status.text = flag ? "Ready" : "Not Ready";
+        if (!PlayerInfo.IsMasterClient)
+        {
+            status.text = flag ? "Ready" : "Not Ready";
+        }
     }
 }

@@ -16,9 +16,9 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - Player
+  - Body
+  - Ground
   - 
   - 
   - 
@@ -52,4 +52,10 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1508491199
+    locked: 0
+  - name: Pointer
+    uniqueID: 2667066611
+    locked: 0
+  - name: UI
+    uniqueID: 447667329
     locked: 0

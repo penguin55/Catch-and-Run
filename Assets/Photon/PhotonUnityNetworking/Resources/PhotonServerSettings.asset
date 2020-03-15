@@ -34,5 +34,11 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - SetCatch
+  - SetReady
+  - Flipping
+  - FlippingOverNetwork
+  - TimesOut
+  - UpdateTimeUI
   DisableAutoOpenWizard: 1
   ShowSettings: 1

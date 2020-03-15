@@ -82,8 +82,11 @@ public class PlayerListings : MonoBehaviourPunCallbacks
     {
         waitingRoomUI.UpdatePlayerRoom();
         int index = players.FindIndex(x => x.PlayerInfo == otherPlayer);
-        Destroy(players[index].gameObject);
-        players.RemoveAt(index);
+        if (index != -1)
+        {
+            Destroy(players[index].gameObject);
+            players.RemoveAt(index);
+        }
     }
 
 }

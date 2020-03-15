@@ -29,12 +29,12 @@ public class MasterManager : SingletonScriptableObject<MasterManager>
                     Debug.LogError("Path is empty for : "+prefab.prefab.name);
                     return null;
                 }
-            }
+            } 
         }
 
         return null;
     }
-
+#if UNITY_EDITOR
     public void GetPrefabsResource()
     {
         if (!Application.isEditor) return;
@@ -51,4 +51,5 @@ public class MasterManager : SingletonScriptableObject<MasterManager>
             }
         }
     }
+#endif
 }

@@ -23,13 +23,14 @@ public class PhotonConnect : MonoBehaviourPunCallbacks
             PhotonNetwork.AutomaticallySyncScene = true;
             PhotonNetwork.ConnectUsingSettings();
 
-            Debug.Log("Connecting to Photon....");
+            MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_CONNECTING_PANEL);
         }
     }
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Connected to Master");
+        MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_CONNECTING_PANEL);
+        MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_MENU_PANEL);
         Debug.Log(MasterManager.GameSettings.NickName);
 
         if (!PhotonNetwork.InLobby) PhotonNetwork.JoinLobby();

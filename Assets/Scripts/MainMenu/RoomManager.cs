@@ -35,7 +35,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
         RoomOptions options = new RoomOptions();
         options.MaxPlayers = 8;
         options.BroadcastPropsChangeToAll = true;
-        PhotonNetwork.JoinOrCreateRoom(roomName.text, options, TypedLobby.Default);
+        string roomTextName = roomName.text;
+
+        if (roomTextName == string.Empty)
+        {
+            roomTextName = "Room-" + Random.Range(0,10000);
+        }
+
+        PhotonNetwork.JoinOrCreateRoom(roomTextName, options, TypedLobby.Default);
     }
 
     private void OpenRoom()
@@ -84,7 +91,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             if (PhotonNetwork.CurrentRoom.PlayerCount < 4)
             {
-                Debug.Log("Can't start, at least 4 players in room");
+                MainMenuManager.instance.SetCommandUIText(CommandManager.UI.LOG_ROOM, "Can't start, at least 4 players in room!");
                 return;
             }
 
@@ -95,7 +102,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 PhotonNetwork.LoadLevel("GAME");
             } else
             {
-                Debug.Log("All players must ready");
+                MainMenuManager.instance.SetCommandUIText(CommandManager.UI.LOG_ROOM, "All players must ready!");
             }
         }
     }

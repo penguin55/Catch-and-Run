@@ -16,6 +16,7 @@ public class PlayerListInfo : MonoBehaviour
         if (playerInfo.IsMasterClient)
         {
             status.text = "Room Master";
+            status.color = Color.yellow;
         }
         else
         {
@@ -28,6 +29,7 @@ public class PlayerListInfo : MonoBehaviour
         if (!PlayerInfo.IsMasterClient)
         {
             status.text = flag ? "Ready" : "Not Ready";
+            status.color = flag ? Color.green : Color.red;
         }
     }
 }

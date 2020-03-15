@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using Photon.Realtime;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerBehaviour : MonoBehaviour
+public class PlayerBehaviour : MonoBehaviourPunCallbacks
 {
-    
+    [SerializeField] private PlayerPointer pointer;
     [SerializeField] private float speed;
     [SerializeField] private float jumpForce;
 
@@ -24,6 +26,10 @@ public class PlayerBehaviour : MonoBehaviour
         onJump = false;
         onGround = false;
         onFall = false;
+        if (photonView.IsMine)
+        {
+            pointer.SetActivePointer(true);
+        }
     }
 
     protected void Idle()
@@ -73,8 +79,39 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void Flipping()
     {
-        if (direction.x > 0) sprite.flipX = false;
-        else if (direction.x < 0) sprite.flipX = true;
+        if (direction.x > 0)
+        {
+            sprite.flipX = false;
+            photonView.RPC("FlippingOverNetwork", RpcTarget.All, false);
+        }
+        else if (direction.x < 0)
+        {
+            sprite.flipX = true;
+            photonView.RPC("FlippingOverNetwork", RpcTarget.All, true);
+        }
+    }
+
+    [PunRPC]
+    public void FlippingOverNetwork(bool flag = false)
+    {
+        sprite.flipX = flag;
+    }
+
+    public void SetPointerStatus(string command)
+    {
+        pointer.SetPointerStatus(command);
+    }
+
+    protected void PointerViewOtherClient()
+    {
+        if (GameManagement.catchStatus.currentCatch == photonView.Owner)
+        {
+            pointer.SetActivePointer(true);
+            pointer.SetPointerStatus("catcher");
+        } else
+        {
+            pointer.SetActivePointer(false);
+        }
     }
 
     #region Animation
@@ -107,13 +144,42 @@ public class PlayerBehaviour : MonoBehaviour
     {
         animator.SetBool("Fall", true);
     }
+
+    public void ResetAnimation()
+    {
+        animator.SetBool("Run", false);
+        animator.SetBool("Jump", false);
+        animator.SetBool("Fall", false);
+    }
     #endregion
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!photonView.IsMine) return;
+
         if (collision.CompareTag("Player"))
         {
-            Debug.Log("Kena");
+            sprite.sortingOrder = Random.Range(1,11);
+            if (GameManagement.catchStatus.currentCatch == PhotonNetwork.LocalPlayer) {
+                Player owner = collision.GetComponent<PhotonView>().Owner;
+                if (GameManagement.catchStatus.lastCatch != owner)
+                {
+                    SetPointerStatus("player");
+                    GameManagement.catchStatus.currentCatch = owner;
+                    GameManagement.catchStatus.lastCatch = PhotonNetwork.LocalPlayer;
+                    GameManagement.instance.ChangeCatcher(owner, PhotonNetwork.LocalPlayer);
+                }
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (!photonView.IsMine) return;
+
+        if (collision.CompareTag("Player"))
+        {
+            sprite.sortingOrder = 0;
         }
     }
 

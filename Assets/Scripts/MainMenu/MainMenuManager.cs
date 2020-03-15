@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -14,21 +15,41 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject createRoomPanel;
     [SerializeField] private GameObject startButton;
     [SerializeField] private GameObject readyButton;
+    [SerializeField] private Text logMessage;
+    [SerializeField] private GameObject connectingPanel;
+
+    private Coroutine lastLogCoroutine;
 
     private void Start()
     {
         instance = this;
     }
 
+    public void SetCommandUIText(string command, string message)
+    {
+        switch (command.ToLower())
+        {
+            case "log_room":
+                LogRoom(message);
+                break;
+        }
+    }
+
     public void SetCommand(string command)
     {
         switch (command.ToLower())
         {
+            case "open_connecting_panel":
+                ShowConnectingPanel();
+                break;
+            case "hide_connecting_panel":
+                HideConnectingPanel();
+                break;
             case "open_menu_panel":
-                //ShowMenuPanel();
+                ShowMenuPanel();
                 break;
             case "hide_menu_panel":
-                //HideMenuPanel();
+                HideMenuPanel();
                 break;
             case "open_tutorial_panel":
                 //ShowTutorialPanel();
@@ -68,6 +89,7 @@ public class MainMenuManager : MonoBehaviour
                 break;
         }
     }
+
 
     #region RoomRender
     private void ShowRoomPanel()
@@ -120,6 +142,17 @@ public class MainMenuManager : MonoBehaviour
     #endregion
 
     #region UI
+
+    private void ShowConnectingPanel()
+    {
+        connectingPanel.SetActive(true);
+    }
+
+    private void HideConnectingPanel()
+    {
+        connectingPanel.SetActive(false);
+    }
+
     private void ShowMenuPanel()
     {
         menuPanel.SetActive(true);
@@ -151,8 +184,27 @@ public class MainMenuManager : MonoBehaviour
     }
     #endregion
 
+    public void ExitGames()
+    {
+        Application.Quit();
+    }
+
     private void OnClick()
     {
 
+    }
+
+    private void LogRoom(string message)
+    {
+        logMessage.text = message;
+        if (lastLogCoroutine != null) StopCoroutine(lastLogCoroutine);
+        lastLogCoroutine = StartCoroutine(delayAppear());
+    }
+
+    IEnumerator delayAppear()
+    {
+        logMessage.enabled = true;
+        yield return new WaitForSeconds(2);
+        logMessage.enabled = false;
     }
 }

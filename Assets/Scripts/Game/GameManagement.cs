@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManagement : MonoBehaviourPunCallbacks
 {
@@ -12,10 +13,12 @@ public class GameManagement : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject player;
     [SerializeField] private Transform[] spawnListed;
     [SerializeField] private Cinemachine2D camera;
+    [SerializeField] private VariableJoystick joystick;
+    [SerializeField] private Button jumpButton;
 
     private Vector3 position;
     private bool ready;
-    private PlayerBehaviour playerObject;
+    private PlayerController playerObject;
 
 
     private void Start()
@@ -46,6 +49,12 @@ public class GameManagement : MonoBehaviourPunCallbacks
         {
             playerObject.SetPointerStatus("catcher");
         }
+    }
+
+    public void ActiveController()
+    {
+        jumpButton.gameObject.SetActive(true);
+        joystick.gameObject.SetActive(true);
     }
 
     private void RandomPosition()
@@ -82,8 +91,9 @@ public class GameManagement : MonoBehaviourPunCallbacks
 
     private void SpawnPlayer()
     {
-        playerObject = (MasterManager.Instance.NetworkInstantiate(player, position, Quaternion.identity)).GetComponent<PlayerBehaviour>();
+        playerObject = (MasterManager.Instance.NetworkInstantiate(player, position, Quaternion.identity)).GetComponent<PlayerController>();
         camera.SetPlayer(playerObject.gameObject);
+        playerObject.SetController(joystick, jumpButton);
 
         if (PhotonNetwork.IsMasterClient)
         {

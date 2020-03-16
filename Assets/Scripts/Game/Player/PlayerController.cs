@@ -1,10 +1,23 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : PlayerBehaviour
 {
+
+    [SerializeField] private VariableJoystick joystick;
+    [SerializeField] private Button jumpButton;
+
     void Awake()
     {
         Initialize();
+    }
+
+    public override void SetController(VariableJoystick joystick, Button button)
+    {
+        this.joystick = joystick;
+        jumpButton = button;
+
+        jumpButton.onClick.AddListener(ControllerPhysic);
     }
 
     void Update()
@@ -25,20 +38,6 @@ public class PlayerController : PlayerBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        if (TimeManager.freeze)
-        {
-            ResetData();
-            return;
-        }
-
-        if (photonView.IsMine)
-        {
-            ControllerPhysic();
-        }
-    }
-
     void LoopBehaviour()
     {
         Idle();
@@ -46,14 +45,17 @@ public class PlayerController : PlayerBehaviour
         Fall();
     }
 
-    void ControllerPhysic()
+    public void ControllerPhysic()
     {
-        if (Input.GetButtonDown("Jump")) Jump();
+        if (photonView.IsMine)
+        {
+            Jump();
+        }   
     }
 
     void ControllerNonPhysic()
     {
-        direction.x =  Input.GetAxis("Horizontal");
+        direction.x = joystick.Horizontal;
     }
 
     private void ResetData()

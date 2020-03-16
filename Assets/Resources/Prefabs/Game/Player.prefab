@@ -388,3 +388,5 @@ MonoBehaviour:
   pointer: {fileID: 7933030827928406626}
   speed: 5
   jumpForce: 350
+  joystick: {fileID: 0}
+  jumpButton: {fileID: 0}

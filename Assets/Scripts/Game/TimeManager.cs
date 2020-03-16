@@ -76,6 +76,7 @@ public class TimeManager : MonoBehaviourPun
         UIManager.instance.SendCommand(CommandManager.UI.OPEN_TIME_TEXT);
         UIManager.instance.SendCommandUIText(CommandManager.UI.UPDATE_TIME_UI, ((int)timeCounting).ToString());
 
+        GameManagement.instance.ActiveController();
     }
 
     private bool CheckNetworkTime()

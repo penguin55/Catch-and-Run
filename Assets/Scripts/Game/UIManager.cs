@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//The same function with MainMenuManager class
 public class UIManager : MonoBehaviour
 {
+    
     public static UIManager instance;
 
     [SerializeField] private GameObject buttonExit;
@@ -122,4 +124,8 @@ public class UIManager : MonoBehaviour
         gameOverMessage.text = message + " is the last catcher.";
     }
 
+    public void OnClick()
+    {
+        AudioManager.instance.PlaySFX("button");
+    }
 }

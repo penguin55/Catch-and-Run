@@ -13,6 +13,7 @@ public class PhotonConnect : MonoBehaviourPunCallbacks
         ConnectToPhoton();    
     }
 
+    // To connect to photon using a setting
     public void ConnectToPhoton()
     {
         if (!PhotonNetwork.IsConnected)
@@ -24,20 +25,26 @@ public class PhotonConnect : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
 
             MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_CONNECTING_PANEL);
+
+            MainMenuManager.instance.ConnectionLog("", true);
         }
     }
 
+    // Automatically called when we are connected to Photon Server and want to give a message to player
+    // that they are connected correctly
     public override void OnConnectedToMaster()
     {
         MainMenuManager.instance.SetCommand(CommandManager.UI.HIDE_CONNECTING_PANEL);
         MainMenuManager.instance.SetCommand(CommandManager.UI.OPEN_MENU_PANEL);
-        Debug.Log(MasterManager.GameSettings.NickName);
+        MainMenuManager.instance.ConnectionLog("Connected to Server", true);
 
         if (!PhotonNetwork.InLobby) PhotonNetwork.JoinLobby();
     }
 
+    // Automatically called when we are disconnected from Photon Server and want to give a message by UI text
+    // that they are disconnected from server
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log("Disconnected from server");
+        MainMenuManager.instance.ConnectionLog("Disconnected from Server", false);
     }
 }

@@ -25,7 +25,14 @@ public class Cinemachine2D : MonoBehaviour {
     public Transform downBound;
     #endregion
 
+    
     private void Update()
+    {
+        Following();
+    }
+
+    //Following camera function, but it'll stop when the player is not exist 
+    private void Following()
     {
         if (transform.GetComponent<Camera>().orthographic)
         {
@@ -46,6 +53,7 @@ public class Cinemachine2D : MonoBehaviour {
         }
     }
 
+    //To set what player will be followed by camera, player dependent from the owner client, so it will not following other camera
     public void SetPlayer(GameObject player)
     {
         this.player = player;

@@ -9,6 +9,7 @@ public class PlayerListInfo : MonoBehaviour
 
     public Player PlayerInfo { get; private set; }
 
+    // To update state of each player in player listing, the state of room master or client and ready state
     public void SetRoomInfo(Player playerInfo)
     {
         PlayerInfo = playerInfo;
@@ -24,6 +25,7 @@ public class PlayerListInfo : MonoBehaviour
         }
     }
 
+    // To set the player locally is the player ready or not
     public void GetReady(bool flag)
     {
         if (!PlayerInfo.IsMasterClient)

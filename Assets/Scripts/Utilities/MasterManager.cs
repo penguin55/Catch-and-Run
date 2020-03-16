@@ -14,6 +14,8 @@ public class MasterManager : SingletonScriptableObject<MasterManager>
 
     [SerializeField] private List<NetworkedPrefabs> networkPrefabs = new List<NetworkedPrefabs>();
 
+    // To Instantiate object we want by network, I'm instantiate it by reference the object, not from its path like Photon do.
+    // Just want make a function like Unity Instantiate
     public GameObject NetworkInstantiate(GameObject obj, Vector3 position, Quaternion rotation)
     {
         foreach (NetworkedPrefabs prefab in networkPrefabs)
@@ -35,6 +37,7 @@ public class MasterManager : SingletonScriptableObject<MasterManager>
         return null;
     }
 #if UNITY_EDITOR
+    // To get Resource from "Resources" folder and save it to my networkPrefabs list
     public void GetPrefabsResource()
     {
         if (!Application.isEditor) return;

@@ -12,6 +12,7 @@ public class CommandManager : MonoBehaviour
     }
 }
 
+//Command for UI and custom properties of Photon. I make this to make it easier to call commands in functions, without having to write them manually
 public class Commands
 {
     public string LOG_ROOM = "log_room";

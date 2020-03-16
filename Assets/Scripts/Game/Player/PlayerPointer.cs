@@ -6,11 +6,13 @@ public class PlayerPointer : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer pointer;
     
+    // To activate the pointer
     public void SetActivePointer(bool flag)
     {
         pointer.enabled = flag;
     }
 
+    // To set the pointer is a catcher or a player
     public void SetPointerStatus(string command)
     {
         switch(command.ToLower())

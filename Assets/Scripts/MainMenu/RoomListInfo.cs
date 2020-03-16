@@ -11,6 +11,7 @@ public class RoomListInfo : MonoBehaviour
 
     public RoomInfo RoomInfo { get; private set; }
 
+    // To set the info of room in room listing
     public void SetRoomInfo(RoomInfo roomInfo)
     {
         RoomInfo = roomInfo;
@@ -19,6 +20,7 @@ public class RoomListInfo : MonoBehaviour
         status.text = roomInfo.MaxPlayers / roomInfo.PlayerCount == 1 ? "Room Full" : "Waiting...";
     }
 
+    // To update selected room and get the info to displaying it 
     public void OnClick_Button()
     {
         RoomManager.instance.UpdateSelectedRoom(RoomInfo);

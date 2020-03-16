@@ -43,6 +43,7 @@ public class GameManagement : MonoBehaviourPunCallbacks
         ready = false;
     }
 
+    // To setting up who is the first catcher when the first game plays
     private void SetUp()
     {
         if (catchStatus.currentCatch == PhotonNetwork.LocalPlayer)
@@ -51,17 +52,20 @@ public class GameManagement : MonoBehaviourPunCallbacks
         }
     }
 
+    // To active the function controll player
     public void ActiveController()
     {
         jumpButton.gameObject.SetActive(true);
         joystick.gameObject.SetActive(true);
     }
 
+    // To randomize the first spawn player position
     private void RandomPosition()
     {
         position = spawnListed[Random.Range(0, spawnListed.Length)].position;
     }
 
+    // To get random player who wi be a first catcher
     private Player GetRandomPlayer()
     {
         List<int> tempID = new List<int>();
@@ -76,6 +80,7 @@ public class GameManagement : MonoBehaviourPunCallbacks
         return PhotonNetwork.CurrentRoom.Players[tempID[tempIndex]];
     }
 
+    // Changing the catcher status
     public void ChangeCatcher(Player newCatcher, Player currentCatch)
     {
         photonView.RPC("SetCatch", RpcTarget.All, newCatcher, currentCatch);
@@ -101,13 +106,19 @@ public class GameManagement : MonoBehaviourPunCallbacks
         }
     }
 
+    // Calls when the time is up
     public void Gameover()
     {
         TimeManager.freeze = true;
+
+        AnalyticsUnity.analytics.EndCatch((int) PhotonNetwork.Time);
+        AnalyticsUnity.analytics.StoreAnalytics();
+
         UIManager.instance.SendCommand(CommandManager.UI.OPEN_GAMEOVER_PANEL);
         UIManager.instance.SendCommandUIText(CommandManager.UI.SET_LAST_CATCHER, catchStatus.currentCatch.NickName);
     }
 
+    // When the master room is leave the room, then this function will triggered for each client and left the room
     public void LeaveRoom()
     {
         if (PhotonNetwork.InRoom)
@@ -117,16 +128,20 @@ public class GameManagement : MonoBehaviourPunCallbacks
         }
     }
 
+    // To check is the room master stays in room or not
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         LeaveRoom();
     }
 
+    // Setting who is the current catcher and last catcher
     [PunRPC]
     public void SetCatch(Player currentCatch, Player lastCatch)
     {
         catchStatus.lastCatch = lastCatch;
         catchStatus.currentCatch = currentCatch;
+
+        AudioManager.instance.PlaySFX("catch");
 
         if (catchStatus.currentCatch == PhotonNetwork.LocalPlayer)
         {
@@ -134,6 +149,7 @@ public class GameManagement : MonoBehaviourPunCallbacks
         }
     }
 
+    // Setting the ready state for each player and start the game automatically
     [PunRPC]
     public void SetReady(bool flag)
     {

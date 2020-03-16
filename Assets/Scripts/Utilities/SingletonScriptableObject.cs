@@ -3,6 +3,9 @@
 public class SingletonScriptableObject<T> : ScriptableObject where T : ScriptableObject
 {
     private static T _instance = null;
+
+    // It's Instance SingletonScriptable, I'm not sure about how it's work. I know that this script is for single instance for scriptable object
+    // I get this script from "First Gear Games" youtube channel about using of Photon Unity Networking 2
     public static T Instance
     {
         get

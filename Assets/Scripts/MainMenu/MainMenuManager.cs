@@ -8,6 +8,7 @@ public class MainMenuManager : MonoBehaviour
 {
     public static MainMenuManager instance;
 
+    [SerializeField] private Text connectionLog;
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject tutorialPanel;
     [SerializeField] private GameObject roomListPanel;
@@ -23,8 +24,10 @@ public class MainMenuManager : MonoBehaviour
     private void Start()
     {
         instance = this;
+        AudioManager.instance.SetVolumeBGM(0.5f);
     }
 
+    // Get the command from other class who call it, and doing a task according to command about changing UI Text
     public void SetCommandUIText(string command, string message)
     {
         switch (command.ToLower())
@@ -35,6 +38,7 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    // Get the command from other class who call it, and doing a task according to command about hide or unhide the panel
     public void SetCommand(string command)
     {
         switch (command.ToLower())
@@ -90,7 +94,7 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
-
+    // To render about room panel
     #region RoomRender
     private void ShowRoomPanel()
     {
@@ -129,6 +133,7 @@ public class MainMenuManager : MonoBehaviour
     }
     #endregion
 
+    // To render about room list panel
     #region RoomListRender
     private void ShowRoomListPanel()
     {
@@ -141,6 +146,7 @@ public class MainMenuManager : MonoBehaviour
     }
     #endregion
 
+    // To render about other panel in canvas
     #region UI
 
     private void ShowConnectingPanel()
@@ -189,11 +195,14 @@ public class MainMenuManager : MonoBehaviour
         Application.Quit();
     }
 
-    private void OnClick()
+    // Trigerring the sfx each button is clicked
+    public void OnClick()
     {
-
+        AudioManager.instance.PlaySFX("button");
     }
 
+    // To displaying the log message when the room is under 4 player and room master is hit the start
+    // or when the a player is not ready but the room master hit the start button
     private void LogRoom(string message)
     {
         logMessage.text = message;
@@ -201,6 +210,14 @@ public class MainMenuManager : MonoBehaviour
         lastLogCoroutine = StartCoroutine(delayAppear());
     }
 
+    // To displaying the current status of connectivity of Photon
+    public void ConnectionLog(string message, bool flag)
+    {
+        connectionLog.text = message;
+        connectionLog.color = flag ? new Color(0, 84f / 255f, 0, 1) : new Color(1, 0, 0, 1);
+    }
+
+    // Give the log message time to dissapear
     IEnumerator delayAppear()
     {
         logMessage.enabled = true;

@@ -12,6 +12,7 @@ public class PlayerController : PlayerBehaviour
         Initialize();
     }
 
+    // Setting the controller of this player
     public override void SetController(VariableJoystick joystick, Button button)
     {
         this.joystick = joystick;
@@ -38,6 +39,7 @@ public class PlayerController : PlayerBehaviour
         }
     }
 
+    // Looping behaviour of player where checks every frame
     void LoopBehaviour()
     {
         Idle();
@@ -45,6 +47,7 @@ public class PlayerController : PlayerBehaviour
         Fall();
     }
 
+    // To controll the player physic (jump mechanicsm)
     public void ControllerPhysic()
     {
         if (photonView.IsMine)
@@ -53,11 +56,13 @@ public class PlayerController : PlayerBehaviour
         }   
     }
 
+    // To controll movement of player
     void ControllerNonPhysic()
     {
         direction.x = joystick.Horizontal;
     }
 
+    // To reset state of animation and direction move to normal state
     private void ResetData()
     {
         direction = Vector2.zero;

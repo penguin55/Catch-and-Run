@@ -19,6 +19,7 @@ public class RoomListings : MonoBehaviourPunCallbacks
 
     private RoomInfo currentRoom = null;
 
+    // To update the room listing, how much room created by other player
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         foreach (RoomInfo info in roomList)
@@ -41,6 +42,7 @@ public class RoomListings : MonoBehaviourPunCallbacks
         }
     }
 
+    // To update the list of room list when the new room is created by someone
     private void UpdatingList(RoomInfo info)
     {
         if (roomsInfo.Contains(info))
@@ -56,6 +58,7 @@ public class RoomListings : MonoBehaviourPunCallbacks
         }
     }
 
+    // To clear the room UI display when we close the room list panel
     public void UnsetCurrentRoom()
     {
         roomName.text = "";
@@ -65,6 +68,7 @@ public class RoomListings : MonoBehaviourPunCallbacks
         currentRoom = null;
     }
 
+    // To set the room info when we click one of room from room listing. The info will appear on UI above of the room listing
     public void SetCurrentRoom(RoomInfo info)
     {
         currentRoom = info;
@@ -74,11 +78,13 @@ public class RoomListings : MonoBehaviourPunCallbacks
         joinButton.gameObject.SetActive(true);
     }
 
+    // To join on the room we have clicked
     public void OnClick_Join()
     {
         if (currentRoom != null) PhotonNetwork.JoinRoom(currentRoom.Name);
     }
 
+    // To get the parent content to spawn the room list
     public Transform GetContent()
     {
         return content;

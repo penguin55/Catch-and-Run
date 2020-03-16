@@ -18,6 +18,7 @@ public class PlayerBehaviour : MonoBehaviourPunCallbacks
 
     protected Vector2 direction;
 
+    // Setting up the first value of player after spawned
     protected void Initialize()
     {
         direction = Vector2.zero;
@@ -33,6 +34,7 @@ public class PlayerBehaviour : MonoBehaviourPunCallbacks
         }
     }
 
+    // To setting the controller of this player
     public virtual void SetController(VariableJoystick joystick, Button button)
     {
 
@@ -74,6 +76,7 @@ public class PlayerBehaviour : MonoBehaviourPunCallbacks
         onFall = false;
     }
 
+    // To check when the player is falling or not and trigger the faling animation when the payer is falling
     protected void Fall()
     {
         if (rigidBody.velocity.y < -0.1f && !onGround && !onFall)
@@ -83,6 +86,7 @@ public class PlayerBehaviour : MonoBehaviourPunCallbacks
         }
     }
 
+    // To flip the player image to left or right according to direction of its move
     private void Flipping()
     {
         if (direction.x > 0)
@@ -97,17 +101,29 @@ public class PlayerBehaviour : MonoBehaviourPunCallbacks
         }
     }
 
+    // To flipping the player in other client device, so it will sync every time
     [PunRPC]
     public void FlippingOverNetwork(bool flag = false)
     {
         sprite.flipX = flag;
     }
 
+    // To set the pointer status of this player
     public void SetPointerStatus(string command)
     {
         pointer.SetPointerStatus(command);
+
+        if (command.ToLower().Equals("player"))
+        {
+            AnalyticsUnity.analytics.EndCatch((int) PhotonNetwork.Time);
+        } 
+        else if (command.ToLower().Equals("catcher"))
+        {
+            AnalyticsUnity.analytics.BeingCatch((int)PhotonNetwork.Time);
+        }
     }
 
+    // To change the pointer status of other player. The pointer will be appear for our player and other player when the other is being a catcher
     protected void PointerViewOtherClient()
     {
         if (GameManagement.catchStatus.currentCatch == photonView.Owner)
@@ -159,6 +175,9 @@ public class PlayerBehaviour : MonoBehaviourPunCallbacks
     }
     #endregion
 
+    // To trigger and change the pointer status with condition the interactable player is not the last catcher. Player who be the current catcher will updating the pointer
+    // and we will toggle the pointer. If we are "not a catcher" we will being "a catcher" and otherwise.
+    // This ontrigger function is also handle the ordering sprite with randomize, so it will randomly gives the order of sprite when two player is collide
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!photonView.IsMine) return;
@@ -179,6 +198,7 @@ public class PlayerBehaviour : MonoBehaviourPunCallbacks
         }
     }
 
+    // Change back the order of sprite to 0 when not collide
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (!photonView.IsMine) return;
